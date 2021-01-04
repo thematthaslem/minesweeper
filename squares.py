@@ -10,9 +10,12 @@ class square(object) :
 
         self.id = id # col + row. Ex. col 2, row 3 -> 23
 
-        self.type = 0   # -1: bomb
+        self.type = 0    # -1: bomb
                          # 0: blank
                          # 1-8: number of bombs
+
+        self.flagged = False    # False: flagged
+                                # True: not flagge
        
         self.open = 0    # 0: not open
                          # 1: open

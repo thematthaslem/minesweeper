@@ -16,6 +16,9 @@ class board(object):
         self.screenWidth = 0
         self.screenHeight = 0
 
+        self.board_height = 0.0
+        self.board_width = 0.0
+
         self.squareWidth = 0.0
 
         self.squares = []
@@ -33,6 +36,9 @@ class board(object):
 
     # Setup/Initialize the board 
     def setup(self) : 
+
+        self.board_width = self.screenWidth - (self.screenMargin * 2) 
+        self.board_height = self.screenWidth - (self.screenMargin * 2)
 
         # Get Square width 
         #.. Find smallest value of squareWidth
@@ -57,10 +63,12 @@ class board(object):
         #
         # Make Square objects
         for i in range(self.rows) :
-            top = (i * smallest) + self.screenMargin # top of square
+            #top = (i * smallest) + self.screenMargin # top of square
+            top = (i * smallest) # top of square
 
             for j in range(self.columns) :
-                left = (j * smallest) + self.screenMargin # Left of square
+                # left = (j * smallest) + self.screenMargin # Left of square
+                left = (j * smallest) # Left of square
                 tempId = (str(i) + 'x' + str(j)) # Squares id: row + x + column
 
                 # Add square to list
@@ -150,18 +158,19 @@ class board(object):
     #################################
     ## DRAW BOARD
     #################################
-    def drawBoard(self, screen) :
-        width = self.screenWidth - (self.screenMargin * 2) 
-        height = self.screenWidth - (self.screenMargin * 2) 
+    def drawBoard(self, surface) : 
 
         # Background
-        pg.draw.rect(screen, (150,150,150), (self.screenMargin, self.screenMargin, width, height)) # Gray bg
-        pg.draw.rect(screen, (90,90,90), (self.screenMargin, self.screenMargin, width, height), 5)  # Border
+        # pg.draw.rect(surface, (150,150,150), (self.screenMargin, self.screenMargin, self.board_width, self.board_height)) # Gray bg
+        # pg.draw.rect(surface, (90,90,90), (self.screenMargin, self.screenMargin, self.board_width, self.board_height), 5)  # Border
+        pg.draw.rect(surface, (150,150,150), (0, 0, self.board_width, self.board_height)) # Gray bg
+        pg.draw.rect(surface, (90,90,90), (0, 0, self.board_width, self.board_height), 5)  # Border
 
 
         # Squares
         for sq in self.squares :
-            sq.drawSquare(screen)
+            sq.drawSquare(surface)
+            #sq.drawSquare(screen)
             #pg.display.flip()
 
 
@@ -178,6 +187,7 @@ class board(object):
     ##
     ##########################################################
     def checkHit(self, xpos, ypos) :
+
         
         ############################
         ##
@@ -192,12 +202,23 @@ class board(object):
            
         squareId = str(row) + 'x' + str(column)
 
+        # In case there was some kind of error where the square doesn't exist, just move on
+        if not squareId in self.squaresMap :
+            return 0
+
         # Find pos of square object in list. (Where it is in the array)
         pos = self.squaresMap[squareId]
 
         # Mark square as hit
         self.squares[pos].open = 1
 
+
+        
+        # If it's a not a bomb -> add one point to player's score
+        # If it's a bomb -> return -1
+        total_score = 1
+        if self.squares[pos].type < 0 :
+            return -1
 
         ############################
         ##
@@ -240,7 +261,7 @@ class board(object):
                     continue
 
 
-
+                
                 # If the square is blank -> find adjacent squares
                 for i in range(low_range_row, high_range_row+1) : # i: row
                     if i < 0 or i == self.rows : 
@@ -264,8 +285,12 @@ class board(object):
                             # Add to queue
                             square_q.append(new_id)
 
+                            # Increase score by one for each square
+                            total_score += 1
 
 
+        return total_score
+        
 
 
 
