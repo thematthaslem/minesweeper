@@ -11,7 +11,7 @@ SCREEN_HEIGHT = 600
 
 gameScreen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-pg.display.set_caption("Minesweep")
+pg.display.set_caption("Minesweeper")
 
 # Initialize font
 pg.init()
