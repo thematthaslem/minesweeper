@@ -51,12 +51,16 @@ class player(object):
 
         self.board = board
 
+        self.score = 0
+
+        self.lives = 3
+
 
 ##############################################
 ### DRAW THE PLAYER 
 ##############################################
 
-    def draw(self, screen) :
+    def draw(self, screen, board_surface) :
 
         yHit = (self.posy + self.h) -4
         xHit = (self.posx + (self.w / 2)) # middle of the bottom of character
@@ -148,8 +152,15 @@ class player(object):
                 if xHit < 30 or xHit > self.SCREEN_WIDTH - 30 or yHit < 30 or yHit > self.SCREEN_HEIGHT - 30 :
                     return
                 else :
-                    self.board.checkHit(xHit, yHit)
-                    self.board.drawBoard(screen)
+                    # If there's a hit, the checkHit() function will return the number of points to add to the score or -1 for bomb
+                    square_type = self.board.checkHit(xHit, yHit)
+                    
+                    if square_type == -1 :
+                        self.lives -= 1
+                    else :
+                        self.score += square_type
+
+                    self.board.drawBoard(board_surface)
 
 
             
@@ -170,9 +181,7 @@ class player(object):
         ##############
         # Show player
         screen.blit(img, (self.posx, self.posy))
-        
-        pg.display.flip()
-        
+                
 
 
 
